@@ -82,6 +82,11 @@ class CalculationScreenViewController: UIViewController {
         self.navigationItem.rightBarButtonItem = summaryButton
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationItem.rightBarButtonItem = nil
+    }
+
     private func setupViews() {
         self.view.addSubview(textField)
         self.view.addSubview(tableView)
