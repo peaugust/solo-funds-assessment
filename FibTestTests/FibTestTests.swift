@@ -17,7 +17,6 @@ class MockCalcVMOutput: CalculationViewModelOutput {
 
 final class FibTestTests: XCTestCase {
 
-    var navController: UINavigationController!
     var sut: CalculationScreenViewModel!
     var mockOutput: MockCalcVMOutput!
     var fib0Sequence: [Decimal]!
@@ -25,9 +24,8 @@ final class FibTestTests: XCTestCase {
     var fib10Sequence: [Decimal]!
 
     override func setUpWithError() throws {
-        navController = UINavigationController()
         mockOutput = MockCalcVMOutput()
-        sut = CalculationScreenViewModel(navController: navController)
+        sut = CalculationScreenViewModel(navController: nil)
         sut.output = mockOutput
         fib0Sequence = [0]
         fib1Sequence = [0, 1]
@@ -35,8 +33,10 @@ final class FibTestTests: XCTestCase {
     }
 
     override func tearDownWithError() throws {
-        navController = nil
         sut = nil
+        mockOutput = nil
+        fib0Sequence = nil
+        fib1Sequence = nil
         fib10Sequence = nil
     }
 

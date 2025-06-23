@@ -23,7 +23,7 @@ protocol CalculationViewModelOutput: AnyObject {
 class CalculationScreenViewModel: CalculationScreenProtocol {
     // MARK: - Factory
 
-    init(navController: UINavigationController) {
+    init(navController: UINavigationController?) {
         self.navController = navController
     }
 
