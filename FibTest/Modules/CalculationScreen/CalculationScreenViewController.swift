@@ -59,8 +59,6 @@ class CalculationScreenViewController: UIViewController {
         let tableView = UITableView()
         tableView.register(FirstPageTableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.layer.borderColor = UIColor.red.cgColor
-        tableView.layer.borderWidth = 1
         tableView.dataSource = self
         tableView.delegate = self
         return tableView
@@ -68,7 +66,6 @@ class CalculationScreenViewController: UIViewController {
 
     let timeElapsedLabel: UILabel = {
         let timeElapsedLabel = UILabel()
-        timeElapsedLabel.text = "Time Elapsed: 00:00"
         timeElapsedLabel.translatesAutoresizingMaskIntoConstraints = false
         return timeElapsedLabel
     }()
@@ -108,18 +105,19 @@ class CalculationScreenViewController: UIViewController {
 extension CalculationScreenViewController: CalculationViewModelOutput {
     func didCalculateSequence() {
         tableView.reloadData()
-        timeElapsedLabel.text = String(format: "Time elapsed: %d seconds", viewModel.timeElapsed)
+        guard let timeElapsed = viewModel.calculatedSequence?.timeElapsed else { return }
+        timeElapsedLabel.text = String(format: "Time elapsed: \(timeElapsed)")
     }
 }
 
 extension CalculationScreenViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.calculatedSequence.count
+        return viewModel.calculatedSequence?.sequence.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? FirstPageTableViewCell else { return UITableViewCell() }
-        cell.setupCell(termIndex: indexPath.row, termValue: viewModel.calculatedSequence[indexPath.row])
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? FirstPageTableViewCell, let sequence = viewModel.calculatedSequence?.sequence else { return UITableViewCell() }
+        cell.setupCell(termIndex: indexPath.row, termValue: sequence[indexPath.row])
         return cell
     }
 }

@@ -8,29 +8,66 @@
 import XCTest
 @testable import FibTest
 
+class MockCalcVMOutput: CalculationViewModelOutput {
+    var didCallCalculateSequence: Bool = false
+    func didCalculateSequence() {
+        didCallCalculateSequence = true
+    }
+}
+
 final class FibTestTests: XCTestCase {
 
+    var navController: UINavigationController!
+    var sut: CalculationScreenViewModel!
+    var mockOutput: MockCalcVMOutput!
+    var fib0Sequence: [Decimal]!
+    var fib1Sequence: [Decimal]!
+    var fib10Sequence: [Decimal]!
+
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        navController = UINavigationController()
+        mockOutput = MockCalcVMOutput()
+        sut = CalculationScreenViewModel(navController: navController)
+        sut.output = mockOutput
+        fib0Sequence = [0]
+        fib1Sequence = [0, 1]
+        fib10Sequence = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
     }
 
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        navController = nil
+        sut = nil
+        fib10Sequence = nil
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+
+    func testFib0() throws {
+        XCTAssertEqual(fib0Sequence, sut.calculateSequence(term: 0).sequence)
     }
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+    func testFib1() throws {
+        XCTAssertEqual(fib1Sequence, sut.calculateSequence(term: 1).sequence)
     }
 
+    func testFib10() throws {
+        XCTAssertEqual(fib10Sequence, sut.calculateSequence(term: 10).sequence)
+    }
+
+    func testSubmitFib10_notifiesOutput() throws {
+        sut.submit("10")
+        XCTAssertNotNil(sut.calculatedSequence)
+        XCTAssertEqual(sut.calculatedSequence!.sequence, fib10Sequence)
+        XCTAssertTrue(mockOutput.didCallCalculateSequence)
+    }
+
+    func testPastCalculationsAreStored() throws {
+        sut.submit("10")
+        sut.submit("0")
+        sut.submit("1")
+        let pastCalculations = sut.pastCalculations
+        XCTAssertEqual(pastCalculations.count, 3)
+        XCTAssertEqual(pastCalculations[0].input, "10")
+        XCTAssertEqual(pastCalculations[1].input, "0")
+        XCTAssertEqual(pastCalculations[2].input, "1")
+    }
 }

@@ -10,9 +10,9 @@ import Foundation
 import UIKit
 
 protocol CalculationScreenProtocol {
-    var calculatedSequence: [Decimal] { get }
+    var calculatedSequence: CalculationResult? { get }
     func submit(_ input: String)
-    func calculateSequence(term: Int) -> [Decimal]
+    func calculateSequence(term: Int) -> CalculationResult
     func navigateToSumary()
 }
 
@@ -30,42 +30,46 @@ class CalculationScreenViewModel: CalculationScreenProtocol {
     // MARK: - Properties
     weak var output: CalculationViewModelOutput?
     var navController: UINavigationController?
-    var calculatedSequence: [Decimal] = []
-    var timeElapsed: Int = 0
+    var calculatedSequence: CalculationResult?
+    var timeElapsed: String = ""
+    var pastCalculations: [PreviousCalculation] = []
 
     // MARK: - Actions
 
-    func calculateSequence(term: Int) -> [Decimal] {
+    func calculateSequence(term: Int) -> CalculationResult {
         var fibSequence: [Decimal] = []
 
         var firstPreviousTerm: Decimal = 0
         var secondPreviousTerm: Decimal = 1
-
-        for currentTerm in 0...term {
-            if currentTerm == 0 {
-                fibSequence.append(firstPreviousTerm)
-            } else if currentTerm == 1 {
-                fibSequence.append(secondPreviousTerm)
-            } else {
-                let nextValue = firstPreviousTerm + secondPreviousTerm
-                firstPreviousTerm = secondPreviousTerm
-                secondPreviousTerm = nextValue
-                fibSequence.append(nextValue)
+        let clock = ContinuousClock()
+        let duration = clock.measure {
+            for currentTerm in 0...term {
+                if currentTerm == 0 {
+                    fibSequence.append(firstPreviousTerm)
+                } else if currentTerm == 1 {
+                    fibSequence.append(secondPreviousTerm)
+                } else {
+                    let nextValue = firstPreviousTerm + secondPreviousTerm
+                    firstPreviousTerm = secondPreviousTerm
+                    secondPreviousTerm = nextValue
+                    fibSequence.append(nextValue)
+                }
             }
         }
-
-        return fibSequence
+        return CalculationResult(sequence: fibSequence, timeElapsed: duration.description)
     }
 
 
     func submit(_ input: String) {
         guard let term = Int(input) else { return }
-        calculatedSequence = calculateSequence(term: term)
+        let result = calculateSequence(term: term)
+        self.pastCalculations.append(PreviousCalculation(input: input, timeElapsed: result.timeElapsed))
+        self.calculatedSequence = result
         output?.didCalculateSequence()
     }
 
     func navigateToSumary() {
-        let viewModel = SummaryViewModel()
+        let viewModel = SummaryViewModel(calculatedSequences: pastCalculations)
         let viewController = SummaryViewController(viewModel: viewModel)
         navController?.pushViewController(viewController, animated: true)
     }

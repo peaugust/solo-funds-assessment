@@ -1,17 +1,16 @@
 //
-//  FirstPageTableViewCell.swift
+//  SummaryTableViewCell.swift
 //  FibTest
 //
-//  Created by James Nguyen (JTN) on 5/2/19.
-//  Copyright © 2019 James Nguyen (JTN). All rights reserved.
+//  Created by Pedro Freddi on 23/06/25.
 //
 
 import Foundation
 import UIKit
 
-class FirstPageTableViewCell: UITableViewCell {
+class SummaryTableViewCell: UITableViewCell {
 
-    // MARK: - Properties
+    // MARK: Properties
 
     let stackView: UIStackView = {
         let stackview = UIStackView()
@@ -23,7 +22,7 @@ class FirstPageTableViewCell: UITableViewCell {
         return stackview
     }()
 
-    let termIndexLabel: UILabel = {
+    let calculatedTermLabel: UILabel = {
         let textLabel = UILabel()
         textLabel.textColor = .label
         textLabel.font = .systemFont(ofSize: 17, weight: .medium)
@@ -31,7 +30,7 @@ class FirstPageTableViewCell: UITableViewCell {
         return textLabel
     }()
 
-    let termValueLabel: UILabel = {
+    let timeElapsedLabel: UILabel = {
         let textLabel = UILabel()
         textLabel.textColor = .label
         textLabel.textAlignment = .right
@@ -40,25 +39,18 @@ class FirstPageTableViewCell: UITableViewCell {
         return textLabel
     }()
 
-    // MARK: - Factory
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setupCell(termIndex: Int, termValue: Decimal) {
-        termIndexLabel.text = "\(termIndex)"
-        termValueLabel.text = "\(termValue)"
-    }
-
     private func setupViews() {
-        stackView.addArrangedSubview(termIndexLabel)
-        stackView.addArrangedSubview(termValueLabel)
+        stackView.addArrangedSubview(calculatedTermLabel)
+        stackView.addArrangedSubview(timeElapsedLabel)
         contentView.addSubview(stackView)
 
         NSLayoutConstraint.activate([
@@ -67,5 +59,10 @@ class FirstPageTableViewCell: UITableViewCell {
             stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
         ])
+    }
+
+    func setupCell(_ previousSequence: PreviousCalculation) {
+        calculatedTermLabel.text = previousSequence.input
+        timeElapsedLabel.text = previousSequence.timeElapsed
     }
 }
