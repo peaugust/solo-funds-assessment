@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">FibTest</string>
+    <string name="summary">Summary</string>
+    <string name="time_elapsed">Time elapsed: %1$d µs</string>
+</resources>
