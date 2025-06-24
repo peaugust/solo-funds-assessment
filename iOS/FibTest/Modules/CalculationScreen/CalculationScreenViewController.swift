@@ -38,6 +38,7 @@ class CalculationScreenViewController: UIViewController {
 
     lazy var textField: UITextField = {
         let textField = UITextField()
+        textField.placeholder = "Type a number to calculate the Fibonacci"
         textField.borderStyle = .roundedRect
         textField.keyboardType = .numberPad
         var doneToolbar: UIToolbar = UIToolbar(frame: CGRectMake(0, 0, 320, 50))
